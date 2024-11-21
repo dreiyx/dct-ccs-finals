@@ -1,5 +1,4 @@
 <?php    
-   
     session_start();
     
     function openCon() {
@@ -49,12 +48,9 @@
         return false;
     }
     
-    
-    
     function isLoggedIn() {
         return isset($_SESSION['email']);
     }
-    
     
     function addUser() {
         $conn = openCon();
@@ -126,5 +122,29 @@
         
         return $subjects;
     }
+
+    function deleteSubject($subject_code) {
+        $conn = openCon(); // Use the existing function for connection
     
+        // Prepare and execute delete query
+        $stmt = $conn->prepare("DELETE FROM subjects WHERE subject_code = ?");
+        if ($stmt === false) {
+            die("Prepare failed: " . $conn->error);
+        }
+    
+        $stmt->bind_param("s", $subject_code);
+        $result = $stmt->execute();
+    
+        if (!$result) {
+            error_log("Error deleting subject: " . $stmt->error); // Log error for debugging
+            $stmt->close();
+            closeCon($conn);
+            return false; // Return false if deletion fails
+        }
+    
+        // Close the statement and connection
+        $stmt->close();
+        closeCon($conn);
+        return true; // Return true if deletion was successful
+    }
 ?>
