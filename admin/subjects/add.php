@@ -161,8 +161,8 @@ $subjects = fetchSubjects();
                             <td><?php echo htmlspecialchars($subject['subject_code']); ?></td>
                             <td><?php echo htmlspecialchars($subject['subject_name']); ?></td>
                             <td>
-                                <button class="btn-edit">Edit</button>
-                                <button class="btn-delete">Delete</button>
+                                <!-- Redirect to delete.php with subject code as a GET parameter -->
+                                <a href="delete.php?subject_code=<?php echo urlencode($subject['subject_code']); ?>" class="btn-delete">Delete</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

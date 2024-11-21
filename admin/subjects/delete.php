@@ -1,5 +1,40 @@
-<html>
+<?php
+// Include necessary files
+include '../partials/header.php';
+include '../partials/side-bar.php';
+include '../../functions.php';
+
+// Check if subject_code is set in the URL
+if (isset($_GET['subject_code'])) {
+    $subjectCode = $_GET['subject_code'];
+
+    // Fetch subject details to display for confirmation
+    $subjects = getSubjects();
+    $subjectToDelete = null;
+    foreach ($subjects as $subject) {
+        if ($subject['subject_code'] === $subjectCode) {
+            $subjectToDelete = $subject;
+            break;
+        }
+    }
+
+    // Handle deletion if confirmed
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $result = deleteSubject($subjectCode);
+        if ($result) {
+            // Redirect to add.php after successful deletion
+            header('Location: add.php');
+            exit();
+        }
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delete Subject</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
@@ -56,23 +91,23 @@
         }
         .buttons {
             display: flex;
-            justify-content: flex-start;
+            gap: 10px;
         }
-        .buttons button {
+        .buttons a, .buttons button {
             padding: 10px 20px;
             font-size: 16px;
+            text-align: center;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-right: 10px;
+            text-decoration: none;
+            color: #fff;
         }
         .buttons .cancel-btn {
             background-color: #6c757d;
-            color: #fff;
         }
         .buttons .delete-btn {
-            background-color: #007bff;
-            color: #fff;
+            background-color: #dc3545;
         }
     </style>
 </head>
@@ -81,19 +116,25 @@
         <h1>Delete Subject</h1>
         <div class="breadcrumb">
             <a href="#">Dashboard</a> / 
-            <a href="#">Add Subject</a> / 
+            <a href="add.php">Add Subject</a> / 
             <span>Delete Subject</span>
         </div>
         <div class="confirmation-box">
-            <p>Are you sure you want to delete the following subject record?</p>
-            <ul>
-                <li><strong>Subject Code:</strong> 1001</li>
-                <li><strong>Subject Name:</strong> English</li>
-            </ul>
-            <div class="buttons">
-                <button class="cancel-btn">Cancel</button>
-                <button class="delete-btn">Delete Subject Record</button>
-            </div>
+            <?php if ($subjectToDelete): ?>
+                <p>Are you sure you want to delete the following subject record?</p>
+                <ul>
+                    <li><strong>Subject Code:</strong> <?php echo htmlspecialchars($subjectToDelete['subject_code']); ?></li>
+                    <li><strong>Subject Name:</strong> <?php echo htmlspecialchars($subjectToDelete['subject_name']); ?></li>
+                </ul>
+                <form method="POST">
+                    <div class="buttons">
+                        <a href="add.php" class="cancel-btn">Cancel</a>
+                        <button type="submit" class="delete-btn">Delete Subject Record</button>
+                    </div>
+                </form>
+            <?php else: ?>
+                <p>Subject not found.</p>
+            <?php endif; ?>
         </div>
     </div>
 </body>
