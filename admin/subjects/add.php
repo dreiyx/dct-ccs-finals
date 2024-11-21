@@ -1,8 +1,39 @@
-<html>
+<?php
+// Include necessary files
+include '../partials/header.php';
+include '../partials/side-bar.php';
+include '../../functions.php';
+
+// Handle form submission
+function handleFormSubmission()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $subjectCode = $_POST['subject_code'];
+        $subjectName = $_POST['subject_name'];
+        addSubject($subjectCode, $subjectName);
+    }
+}
+
+// Fetch subjects from the database
+function fetchSubjects()
+{
+    return getSubjects();
+}
+
+// Main execution
+handleFormSubmission();
+$subjects = fetchSubjects();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add a New Subject</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
+        /* Styles here */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -43,24 +74,19 @@
             padding: 10px;
             border: 1px solid #ced4da;
             border-radius: 5px;
-            font-size: 14px;
         }
         .btn {
             display: inline-block;
             padding: 10px 20px;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            text-decoration: none;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
+            text-align: center;
         }
-        .btn-primary {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-        }
-        .btn-primary:hover {
+        .btn:hover {
             background-color: #0056b3;
         }
         table {
@@ -78,8 +104,8 @@
         .btn-edit {
             background-color: #17a2b8;
             color: #fff;
-            border: none;
             padding: 5px 10px;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
         }
@@ -89,8 +115,8 @@
         .btn-delete {
             background-color: #dc3545;
             color: #fff;
-            border: none;
             padding: 5px 10px;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
         }
@@ -105,15 +131,20 @@
         <div class="breadcrumb">
             <a href="#">Dashboard</a> / Add Subject
         </div>
+        <!-- Form Section -->
         <div class="form-container">
-            <div class="form-group">
-                <input type="text" placeholder="Subject Code">
-            </div>
-            <div class="form-group">
-                <input type="text" placeholder="Subject Name">
-            </div>
-            <button class="btn btn-primary">Add Subject</button>
+            <form method="POST">
+                <div class="form-group">
+                    <input type="text" name="subject_code" placeholder="Subject Code" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="subject_name" placeholder="Subject Name" required>
+                </div>
+                <button type="submit" class="btn">Add Subject</button>
+            </form>
         </div>
+
+        <!-- Table Section -->
         <div class="table-container">
             <h2>Subject List</h2>
             <table>
@@ -125,30 +156,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1001</td>
-                        <td>English</td>
-                        <td>
-                            <button class="btn-edit">Edit</button>
-                            <button class="btn-delete">Delete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>1002</td>
-                        <td>Mathematics</td>
-                        <td>
-                            <button class="btn-edit">Edit</button>
-                            <button class="btn-delete">Delete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>1003</td>
-                        <td>Science</td>
-                        <td>
-                            <button class="btn-edit">Edit</button>
-                            <button class="btn-delete">Delete</button>
-                        </td>
-                    </tr>
+                    <?php foreach ($subjects as $subject): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($subject['subject_code']); ?></td>
+                            <td><?php echo htmlspecialchars($subject['subject_name']); ?></td>
+                            <td>
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-delete">Delete</button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
