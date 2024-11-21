@@ -4,13 +4,16 @@ include '../partials/header.php';
 include '../partials/side-bar.php';
 include '../../functions.php';
 
+// Initialize variables
+$subjectToDelete = null;
+
 // Check if subject_code is set in the URL
 if (isset($_GET['subject_code'])) {
     $subjectCode = $_GET['subject_code'];
 
     // Fetch subject details to display for confirmation
     $subjects = getSubjects();
-    $subjectToDelete = null;
+
     foreach ($subjects as $subject) {
         if ($subject['subject_code'] === $subjectCode) {
             $subjectToDelete = $subject;
@@ -20,13 +23,22 @@ if (isset($_GET['subject_code'])) {
 
     // Handle deletion if confirmed
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $result = deleteSubject($subjectCode);
-        if ($result) {
-            // Redirect to add.php after successful deletion
-            header('Location: add.php');
-            exit();
+        try {
+            $result = deleteSubject($subjectCode);
+            if ($result) {
+                // Redirect to add.php after successful deletion
+                header('Location: index.php');
+                exit();
+            } else {
+                echo "<p style='color: red;'>Error: Could not delete the subject record. Please try again.</p>";
+            }
+        } catch (Exception $e) {
+            error_log("Error deleting subject: " . $e->getMessage());
+            echo "<p style='color: red;'>An unexpected error occurred. Please check the logs.</p>";
         }
     }
+} else {
+    echo "<p style='color: red;'>No subject code provided in the URL.</p>";
 }
 ?>
 
@@ -133,7 +145,7 @@ if (isset($_GET['subject_code'])) {
                     </div>
                 </form>
             <?php else: ?>
-                <p>Subject not found.</p>
+                <p style="color: red;">Subject not found. Please check the URL and try again.</p>
             <?php endif; ?>
         </div>
     </div>

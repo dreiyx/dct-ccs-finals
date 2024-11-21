@@ -171,4 +171,5 @@ $subjects = fetchSubjects();
         </div>
     </div>
 </body>
+
 </html>
